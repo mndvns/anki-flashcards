@@ -1,0 +1,22 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/*.code-workspace": true,
+    "**/*.log": true,
+    "**/.eslintcache": true,
+    "**/.gitkeep": true,
+    "**/.ultra.cache.json": true,
+    "**/__*__": true,
+    "**/node_modules": true,
+    "**/package-lock.json": true,
+    "**/yarn.lock": true,
+    "flashcards/*.html": true,
+    "flashcards/*.json": true
+  },
+  "explorerExclude.backup": {}
+}

@@ -1,0 +1,22 @@
+file:
+  dom: dom
+  js: (js|javascript)
+  js::array: array
+  js::constructor: constructor
+  js::function: function
+  js::iteration: iteration
+  js::object: object
+  js::prototype: prototype
+  js::string: string
+  json: json
+  oop: oop
+  software: software
+
+code:
+  css: (css|stylesheets?)
+  dom: (dom|document object model)
+  html: html
+  http: https?
+  oop: (oop|object-oriented programming)
+  web: (web ?page)
+  software: programming languages?

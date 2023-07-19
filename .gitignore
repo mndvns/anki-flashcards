@@ -1,0 +1,5 @@
+!flashcards/*.md
+!flashcards/.*
+flashcards/*.html
+flashcards/*.json
+deckfile.txt
