@@ -1,17 +1,14 @@
-@dev:
-  clear && just run
-  npx -y chokidar-cli \
-    "src/*.ts,flashcards/*.md,flashcards/.tags.yaml" \
-    --ignore "flashcards/*.json,flashcards/*.html" \
-    --command "clear && just run"
-
-run:
+build:
   node \
     --no-warnings \
     --experimental-modules \
     --experimental-specifier-resolution=node \
     --loader=ts-node/esm \
     ./src/parse.ts
+
+serve:
+  test -f flashcards.html || just build
+  open flashcards.html
 
 tags:
   FIRST=; \
@@ -25,11 +22,5 @@ tags:
     echo "$LABEL$TAGS"; \
   done
 
-serve:
-  serve flashcards
-
 clean:
   rm -rf flashcards/*.{json,html}
-
-reset:
-  rm -rf node_modules package-lock.json

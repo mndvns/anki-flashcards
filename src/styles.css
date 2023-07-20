@@ -1,0 +1,130 @@
+html {
+  font-family: Arial;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+article {
+  border-bottom: 2px solid #888;
+  padding-bottom: 1.5rem;
+  width: 100%;
+}
+
+h1 {
+  display: flex;
+  font-weight: 400;
+  margin: 0;
+}
+
+h1>* {
+  color: #333;
+}
+
+h1>a {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  padding: 2rem 1.5rem 1rem;
+  text-decoration: none;
+}
+
+h1>a:hover b {
+  text-decoration: underline;
+}
+
+main {
+  transform: scale(.95);
+}
+
+section {
+  background: #eee;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  cursor: default;
+  overflow: hidden;
+}
+
+section:empty {
+  display: none;
+}
+
+section.back {
+  margin-top: .75rem;
+}
+
+section>header {
+  background: hsla(0, 0%, 0%, .05);
+  border-bottom: 1px solid #ddd;
+  color: hsla(0, 0%, 0%, .6);
+  font-weight: 600;
+  font-size: .75rem;
+  padding: .75rem 1rem .7rem;
+  text-shadow: 0 1px 0 #fff;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+section>div {
+  padding: 0 1rem 0;
+}
+
+section>div>*:first-child {
+  margin-top: 1rem;
+}
+
+section>div>*:last-child {
+  margin-bottom: 1rem;
+}
+
+section,
+pre {
+  border-radius: 2px;
+}
+
+pre {
+  filter: contrast(1) brightness(1.5);
+  font-size: .8rem;
+}
+
+*:not(pre)>code {
+  color: hsla(0, 0%, 0%, .95);
+  display: inline-flex;
+  font-size: .775rem;
+  filter: contrast(1.1) brightness(0.9);
+  margin: 0 3px;
+  bottom: 1px;
+  position: relative;
+  text-shadow: 0 1px 0 white;
+  transform: scaleY(.9);
+}
+
+*:not(pre)>code:after {
+  content: "";
+  background: hsla(192.2, 100%, 10.6%, .15);
+  border: 1px solid;
+  border-color: hsla(0, 0%, 0%, .05) hsla(0, 0%, 0%, .07) hsla(0, 0%, 0%, .1);
+  border-radius: 2px;
+  display: inline-flex;
+  height: calc(100% + 1px);
+  width: calc(100% + 4px);
+  left: -3px;
+  bottom: -1px;
+  position: absolute;
+}
+
+[class*=cloze] {
+  color: #26ccdd;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.cloze-start,
+.cloze-end {
+  display: inline-flex;
+  margin: 0 1px;
+  transform: scale(1.1);
+  transform-origin: bottom;
+}

@@ -2,4 +2,5 @@
 !flashcards/.*
 flashcards/*.html
 flashcards/*.json
+flashcards.html
 deckfile.txt

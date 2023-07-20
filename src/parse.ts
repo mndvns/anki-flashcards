@@ -10,11 +10,21 @@ const ROOT = process.cwd();
 // Keep track of all files that are written.
 const writtenFiles = new Set<string>();
 
-// For converting markdown to HTML.
-const mdConverter = new showdown.Converter();
-
 // For converting code blocks to HTML.
 const htmlHighlighter = await shiki.getHighlighter({ theme: "solarized-dark" });
+
+// For converting markdown to HTML.
+const mdConverter = new showdown.Converter({
+  disableForced4SpacesIndentedSublists: true,
+  emoji: true,
+  ghCodeBlocks: true,
+  noHeaderId: true,
+  omitExtraWLInCodeBlocks: true,
+  simpleLineBreaks: true,
+  smartIndentationFix: false,
+  strikethrough: true,
+  underline: true,
+});
 
 // Tags along with their corresponding patterns.
 const [fileTags, codeTags] = await(async () => {
@@ -39,6 +49,13 @@ await Promise.all((await getFilePaths())
   .map((filepath) => fs.rm(filepath, { force: true, recursive: true }))
 );
 
+const htmlGroups: Map<string, {
+  file: string,
+  path: string,
+  front: string | null,
+  back: string | null
+}> = new Map();
+
 // Generate the Anki cards file to be imported.
 const allFiles = await getFilePaths();
 const srcFiles = allFiles.filter((filepath) => filepath.endsWith(".md"));
@@ -47,22 +64,53 @@ const deckData = [];
 deckData.push(`#separator:pipe`);
 deckData.push(`#html:true`);
 deckData.push(`#notetype column:1`);
-await Promise.all(srcFiles.map(async (mdFile) => {
-  const frontFile = mdFile.replace(/\.md$/, ".front.html");
-  const frontData = allFiles.includes(frontFile) ? await fs.readFile(frontFile, "utf-8") : null;
-  const backFile = mdFile.replace(/\.md$/, ".back.html");
-  const backData = allFiles.includes(backFile) ? await fs.readFile(backFile, "utf-8") : null;
+await Promise.all(srcFiles.map(async (mdPath) => {
+  const mdFileName = path.basename(mdPath, ".md");
+  const htmlGroup = { file: mdFileName, path: mdPath, front: null, back: null };
+  const frontPath = mdPath.replace(/\.md$/, ".front.html");
+  const frontData = htmlGroup.front = allFiles.includes(frontPath) ? await fs.readFile(frontPath, "utf-8") : null;
+  const backPath = mdPath.replace(/\.md$/, ".back.html");
+  const backData = htmlGroup.back = allFiles.includes(backPath) ? await fs.readFile(backPath, "utf-8") : null;
   const deckType = frontData.includes(`{{c`) ? "Cloze" : "Basic";
   // const tagFile = mdFile.replace(/\.md$/, ".tags.json");
   // const tagData = JSON.parse(await (files.includes(tagFile) ? fs.readFile(tagFile, "utf-8") : new Promise(() => `null`)));
+  htmlGroups.set(mdFileName, htmlGroup);
   const parts = [deckType, frontData, backData].filter(Boolean);
   if (parts.length > 1) {
     deckData.push(parts.join("|"));
   } else {
-    console.warn(chalk.yellow`No front or back data for file: ${mdFile}`)
+    console.warn(chalk.yellow`No front or back data for file: ${mdPath}`)
   }
 }));
 await fs.writeFile(deckFile, deckData.join("\n"));
+
+// Generate a consolidated HTML file for all flashcards.
+let htmlLines = "<!DOCTYPE html>";
+
+// Add the CSS file to the consolidated HTML file.
+htmlLines += `<style>${await fs.readFile(`${ROOT}/src/styles.css`)}</style>`;
+
+// Format and add each flashcard to the consolidated HTML file.
+Array.from(htmlGroups.values())
+  .filter(({ front, back }) => front || back)
+  .sort((a, b) => a.file.localeCompare(b.file))
+  .forEach(({ file, front, back }, index) => {
+    const title = file.replace(/-/g, " ");
+    htmlLines += `<article>
+      <h1 id="${file}"><a href="#${file}"><b>${title}</b><i>#${index + 1}</i></a></h1>
+      <main>
+        <section class="front"><header>Front</header><div>${front}</div></section>
+        ${back ? `<section class="back"><header>Back</header><div>${back}</div></section>` : ""}
+      <main>
+    </article>`;
+  });
+
+// Convert Anki cloze blocks to HTML format.
+htmlLines = htmlLines
+  .replace(/\{\{c\d*::/gm, () => `<span class="cloze"><span class="cloze-start">[[</span><span class="cloze-inner">`)
+  .replace(/\}\}/gm, () => `</span><span class="cloze-end">]]</span></span>`);
+
+fs.writeFile(`${ROOT}/flashcards.html`, htmlLines);
 
 /**
  * Convert a single markdown file into
@@ -169,23 +217,28 @@ function convertMdCodeBlocks(inputStr: string) {
   }
   shiftOutputLinesToBlock();
 
-  return outputBlocks.join("").replaceAll(
-    `<pre class="shiki solarized-dark" style="background-color: `,
-    `<pre class="shiki solarized-dark" style="padding: 6px 9px; background-color: `
-  // ).replaceAll(
-  //   `class="shiki solarized-dark" `,
-  //   ""
-  );
+  return outputBlocks.join("")
+    .replaceAll(`class="shiki solarized-dark" `, "")
+    .replaceAll(
+      `<pre style="background-color: `,
+      `<pre style="padding: 6px 9px; background-color: `
+    );
 
   // If there are any lines in the outputLines array, convert them to a HTML block.
   // This is done separately so that we can safely format the non-code HTML.
   function shiftOutputLinesToBlock() {
     if (!outputLines.length) return;
-    const outputBlock = mdConverter.makeHtml(outputLines.join("\n")).replace(/\n/g, "")
+    const outputBlock = mdConverter.makeHtml(
+      outputLines.join("\n")
+        .replace(/(:)\n([^\n])/g, "$1 $2")
+        .replace(/([^\n])\n(\w)/g, "$1 $2")
+        .replace(/([^\n])\n([^\n\+\-\<])/g, "$1$2") // Remove single newlines.
+    )
+      .replace(/\n/g, "")
+      .replace(/<br \/>([a-z])/g, " $1");
     outputLines.length = 0;
     outputBlocks.push(outputBlock);
   }
-
 }
 
 /**
@@ -193,6 +246,7 @@ function convertMdCodeBlocks(inputStr: string) {
  */
 async function getFilePaths() {
   return (await fs.readdir(`${ROOT}/flashcards`))
+    // .filter((filename) => /javascript-language-development-uses.md/.test(filename))
     .filter((filename) => !filename.startsWith("."))
     .map((filename) => `${ROOT}/flashcards/${filename}`);
 }
