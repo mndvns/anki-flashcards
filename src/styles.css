@@ -19,11 +19,11 @@ h1 {
   margin: 0;
 }
 
-h1>* {
+h1 > * {
   color: #333;
 }
 
-h1>a {
+h1 > a {
   display: flex;
   flex: 1;
   justify-content: space-between;
@@ -31,12 +31,12 @@ h1>a {
   text-decoration: none;
 }
 
-h1>a:hover b {
+h1 > a:hover b {
   text-decoration: underline;
 }
 
 main {
-  transform: scale(.95);
+  transform: scale(0.95);
 }
 
 section {
@@ -52,30 +52,30 @@ section:empty {
 }
 
 section.back {
-  margin-top: .75rem;
+  margin-top: 0.75rem;
 }
 
-section>header {
-  background: hsla(0, 0%, 0%, .05);
+section > header {
+  background: hsla(0, 0%, 0%, 0.05);
   border-bottom: 1px solid #ddd;
-  color: hsla(0, 0%, 0%, .6);
+  color: hsla(0, 0%, 0%, 0.6);
   font-weight: 600;
-  font-size: .75rem;
-  padding: .75rem 1rem .7rem;
+  font-size: 0.75rem;
+  padding: 0.75rem 1rem 0.7rem;
   text-shadow: 0 1px 0 #fff;
   text-transform: uppercase;
   width: 100%;
 }
 
-section>div {
+section > div {
   padding: 0 1rem 0;
 }
 
-section>div>*:first-child {
+section > div > *:first-child {
   margin-top: 1rem;
 }
 
-section>div>*:last-child {
+section > div > *:last-child {
   margin-bottom: 1rem;
 }
 
@@ -86,26 +86,26 @@ pre {
 
 pre {
   filter: contrast(1) brightness(1.5);
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
-*:not(pre)>code {
-  color: hsla(0, 0%, 0%, .95);
+*:not(pre) > code {
+  color: hsla(0, 0%, 0%, 0.95);
   display: inline-flex;
-  font-size: .775rem;
+  font-size: 0.775rem;
   filter: contrast(1.1) brightness(0.9);
   margin: 0 3px;
-  bottom: 1px;
+  bottom: 0;
   position: relative;
   text-shadow: 0 1px 0 white;
-  transform: scaleY(.9);
+  transform: scaleY(0.9);
 }
 
-*:not(pre)>code:after {
+*:not(pre) > code:after {
   content: "";
-  background: hsla(192.2, 100%, 10.6%, .15);
+  background: hsla(192.2, 100%, 10.6%, 0.15);
   border: 1px solid;
-  border-color: hsla(0, 0%, 0%, .05) hsla(0, 0%, 0%, .07) hsla(0, 0%, 0%, .1);
+  border-color: hsla(0, 0%, 0%, 0.05) hsla(0, 0%, 0%, 0.07) hsla(0, 0%, 0%, 0.1);
   border-radius: 2px;
   display: inline-flex;
   height: calc(100% + 1px);
@@ -115,7 +115,7 @@ pre {
   position: absolute;
 }
 
-[class*=cloze] {
+[class*="cloze"] {
   color: #26ccdd;
   font-style: normal;
   font-weight: bold;
